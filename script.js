@@ -107,14 +107,34 @@ function NewTest() {
     Menu("test")
   } else {
     CurentSelectedWord = ar_FT[(Math.floor(Math.random()*ar_FT.length))];
-    document.getElementById("test_ask_word").innerHTML = 
-      words[CurentSelectedWord].kr_word;
-    document.getElementById("test_check_word").innerHTML =
-      words[CurentSelectedWord].kr_word;
-    document.getElementById("test_check_answer").innerHTML = 
-      words[CurentSelectedWord].uz_word;
+    
+    if (test_option.lang === "kr-to-uz") {
+      document.getElementById("test_ask_word").innerHTML = 
+        words[CurentSelectedWord].kr_word;
+      document.getElementById("test_check_word").innerHTML =
+        words[CurentSelectedWord].kr_word;
+      document.getElementById("test_check_answer").innerHTML = 
+        words[CurentSelectedWord].uz_word;
+    } else if (test_option.lang === "uz-to-kr") {
+      document.getElementById("test_ask_word").innerHTML = 
+        words[CurentSelectedWord].uz_word;
+      document.getElementById("test_check_word").innerHTML =
+        words[CurentSelectedWord].uz_word;
+      document.getElementById("test_check_answer").innerHTML = 
+        words[CurentSelectedWord].kr_word;
+    }
   }
 }
+//
+function SoundBtn() {
+  if (test_option === "kr-to-uz") {
+    lang_ = "kr";
+  } else if (test_option === "uz-to-kr") {
+    lang_ = "uz";
+  }
+  TextToSpeech(words[CurentSelectedWord].kr_word, "kr");
+}
+// TextToSpeech
 //
 function TestCheck(bool_) {
   if (bool_) {
@@ -288,3 +308,27 @@ function getCurrentDateTime() {
 }
 
 
+    // Converts Text to Speech {en,uz,ru,kr}
+    function TextToSpeech(text_, lang_) {
+      if ('speechSynthesis' in window) {
+        // Create a new SpeechSynthesisUtterance object
+        var utterance = new SpeechSynthesisUtterance();
+        // Set the text to be spoken
+        utterance.text = text_;
+        // Specify Korean as the language
+        if (lang_ === "kr") {
+          utterance.lang = 'ko-KR';
+        } else if (lang_ === "uz") {
+          utterance.lang = 'uz-UZ'; // Set language to Uzbek
+        } else if (lang_ === "en") {
+          utterance.lang = 'en-US'; // Set language to English
+        } else if (lang_ === "ru") {
+          utterance.lang = 'ru-RU'; // Set language to Russian
+        }
+        // Speak the text
+        speechSynthesis.speak(utterance);
+      } else {
+        // If speech synthesis is not supported, alert the user
+        alert('Sorry, your browser does not support speech synthesis.');
+      }
+    }
