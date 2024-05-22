@@ -134,7 +134,8 @@ function SoundBtn() {
   }
   TextToSpeech(words[CurentSelectedWord].kr_word, "kr");
 }
-// TextToSpeech
+//TextToSpeech("Assalomu alaykum","uz")
+TextToSpeech("Curent Selected Word","en")
 //
 function TestCheck(bool_) {
   if (bool_) {
