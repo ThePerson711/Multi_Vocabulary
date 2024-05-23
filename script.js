@@ -32,6 +32,8 @@ let test = {
   ask: document.getElementById("test_ask"),
   check: document.getElementById("test_check")
 }
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 let CurentNumOfTest = 0;
 let CurTest = {
   true: 0,
@@ -56,7 +58,9 @@ for (let i = 1; i <= 22; i++) {
 };
 SetDataToLS();*/
 
-Menu("test");
+Menu("words");
+ClickedWord(45);
+console.table(words[45-1].tested)
 test.ask.style.visibility = "visible";
 test.check.style.visibility = "hidden";
 //StartTest();
@@ -134,8 +138,6 @@ function SoundBtn() {
   }
   TextToSpeech(words[CurentSelectedWord].kr_word, "kr");
 }
-//TextToSpeech("Assalomu alaykum","uz")
-TextToSpeech("Curent Selected Word","en")
 //
 function TestCheck(bool_) {
   if (bool_) {
@@ -151,6 +153,7 @@ function TestCheck(bool_) {
       result: false
     })
   }
+  SetDataToLS();
   test.ask.style.visibility = "visible";
   test.check.style.visibility = "hidden";
   NewTest();
@@ -195,6 +198,49 @@ function ClickedWord(param1) {
   document.getElementById("word_show_date").innerHTML =
     `Added date => ${words[CurentSelectedWord].date}`;
   move_list.style = `transform: translate(-60%, 0);`;
+    var ans_ = {
+      tr: 0,
+      fa: 0
+    };
+    words[CurentSelectedWord].tested.forEach(element => {
+      if (element.result) {
+        ans_.tr++;
+      } else {
+        ans_.fa++;
+      }
+    });   
+      var lastend = 0;
+      var data = [ans_.tr, ans_.fa]; // If you add more data values make sure you add more colors
+      var myTotal = 0; // Automatically calculated so don't touch
+      var myColor = ["green", "red", "yellow"]; // Colors of each slice
+      if (ans_.tr === 0 && ans_.fa === 0) {
+        data = [1];
+        myColor = ["yellow"];
+      }
+      for (var e = 0; e < data.length; e++) {
+        myTotal += data[e];
+      }
+      for (var i = 0; i < data.length; i++) {
+        if ( i === 0) {
+          lastend = -(Math.PI * 2 * (data[i] / myTotal)/2);
+        }
+        ctx.fillStyle = myColor[i];
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2, canvas.height / 2);
+        ctx.arc(
+          canvas.width / 2,  // x
+          canvas.height / 2, // y
+          canvas.height / 2, // radius
+          lastend,           // startingAngle (radians)
+          lastend + Math.PI * 2 * (data[i] / myTotal), // endingAngle (radians)
+          false // antiClockwise (boolean)
+        );
+        ctx.lineTo(canvas.width / 2, canvas.height / 2);
+        ctx.fill();
+        lastend += (Math.PI * 2 * (data[i] / myTotal));
+      }
+      document.getElementById("diagramm_tr").innerHTML = ans_.tr;
+      document.getElementById("diagramm_fa").innerHTML = ans_.fa;
 }
 //
 function DeleteWord() {

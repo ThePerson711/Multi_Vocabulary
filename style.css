@@ -336,3 +336,33 @@ body {
     #test_check_btn_true {
       background-color: green;
     }
+
+  .diagramm {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(1vw*48);
+    height: calc(1vw*22);
+    border-radius: calc(1vw*2);
+    box-shadow: 0 0 calc(1vw*2) black;
+    margin-bottom: 4px;
+    background-color: rgb(76, 144, 161);
+  }
+    .canvas {
+      width: calc(1vw*20);
+      height: calc(1vw*20);
+      border-radius: 50%;
+      background-color: transparent;
+      border: solid 2px black;
+    }
+    .diagramm_p {
+      font-size: 26px;
+      font-weight: bold;
+      margin: 12px;
+    }
+      #diagramm_tr {
+        color: green;
+      }
+      #diagramm_fa {
+        color: red;
+      }
