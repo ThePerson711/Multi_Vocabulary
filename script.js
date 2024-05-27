@@ -59,10 +59,9 @@ for (let i = 1; i <= 22; i++) {
 SetDataToLS();*/
 
 Menu("words");
-ClickedWord(45);
 console.table(words[45-1].tested)
-test.ask.style.visibility = "visible";
-test.check.style.visibility = "hidden";
+//test.ask.style.visibility = "visible";
+//test.check.style.visibility = "hidden";
 //StartTest();
 //ClickedWord(1);
 
@@ -128,6 +127,8 @@ function NewTest() {
         words[CurentSelectedWord].kr_word;
     }
   }
+  test.ask.style.visibility = "visible";
+  test.check.style.visibility = "hidden";
 }
 //
 function SoundBtn() {
@@ -136,6 +137,7 @@ function SoundBtn() {
   } else if (test_option === "uz-to-kr") {
     lang_ = "uz";
   }
+  console.log(words[CurentSelectedWord].kr_word)
   TextToSpeech(words[CurentSelectedWord].kr_word, "kr");
 }
 //

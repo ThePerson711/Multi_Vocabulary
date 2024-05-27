@@ -366,3 +366,14 @@ body {
       #diagramm_fa {
         color: red;
       }
+
+  .line_split {
+    width: 72%;
+    height: calc(1vh*0.4);
+    border-radius: calc(1vh*0.4);
+    margin: calc(1vh*1) 0;
+    box-shadow: 0 0 20px gray,
+      0 0 16px rgb(46, 46, 46),
+      0 0 8px black;
+    background-color: gray;
+  }
