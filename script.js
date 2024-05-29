@@ -23,6 +23,7 @@ const re_inp = {
 const words_list = document.getElementById("words_show_list");
 let words = [];
 let ar_FT = []
+let tim_ar = [];
 let test_option = {
   lang: "kr-to-uz",
   num: 10,
@@ -40,9 +41,21 @@ let CurTest = {
   false: 0,
   num: 0
 }
+let settings = {
+    mode: "dark",
+    langTo: "kr-to-uz",
+    NumOfTests: 5,
+    Period: "all"
+};
 let CurentSelectedWord = 0;
+let CurentList = 1;
+let BeforeList = 1;
 if (localStorage.getItem("KR_VOC_MY_ffLS") !== null) {
   words = JSON.parse(localStorage.getItem("KR_VOC_MY_ffLS"));
+}
+
+if (localStorage.getItem("KR_VOC_MY_Setings") !== null) {
+    settings = JSON.parse(localStorage.getItem("KR_VOC_MY_Setings"));
 }
 
 /*
@@ -58,14 +71,37 @@ for (let i = 1; i <= 22; i++) {
 };
 SetDataToLS();*/
 
-Menu("words");
-console.table(words[45-1].tested)
+Menu("test");
+//console.table(words[45-1].tested)
 //test.ask.style.visibility = "visible";
 //test.check.style.visibility = "hidden";
 //StartTest();
 //ClickedWord(1);
 
 //
+
+var setting_elements = document.querySelectorAll(".settings_inp");
+    setting_elements.forEach(element => {
+        element.addEventListener("change", () => {
+            console.log("_____gg");
+            if (document.getElementById("test_select_lang_kr_to_uz").checked) {
+                settings.langTo = "kr-to-uz";
+            } else if (document.getElementById("test_select_lang_uz_to_kr").checked = true) {
+                settings.langTo = "uz-to-kr";
+            }
+            if (document.getElementById("test_select_date_today").checked) {
+                settings.Period = "today";
+            } else if (document.getElementById("test_select_date_week").checked) {
+                settings.Period = "week";
+            } else if (document.getElementById("test_select_date_all").checked) {
+                settings.Period = "all";
+            }
+
+            settings.NumOfTests = document.getElementById("test_select_num").value;
+            SetSettingsToLS();
+    });    
+})
+
 function StartTest() {
   if (document.getElementById("test_select_lang_kr_to_uz").checked) {
     test_option.lang = "kr-to-uz";
@@ -80,7 +116,7 @@ function StartTest() {
     test_option.date = "all";
   }
   test_option.num = (document.getElementById("test_select_num").value)
-  move_list.style = `transform: translate(-80%, 0);`;
+  SlideScreenList(5);
   CurentNumOfTest = 0;
   CurTest.num = 0;
   CurTest.true = 0;
@@ -98,7 +134,24 @@ function StartTest() {
       ar_FT.push(i)
     }
   }
-  NewTest();
+  //
+    tim_ar = [];
+    ar_FT.forEach(element => {
+        tim_ar.push({
+            ind: element,
+            fa: 0
+        })
+    });
+    tim_ar.forEach(element => {
+        fa_count_ = 0;
+        words[element.ind].tested.forEach(chech_el => {
+            if (chech_el !== true) {
+                fa_count_++;
+            }
+        });
+        element.fa = fa_count_;
+    });
+    NewTest();
 }
 //
 function NewTest() {
@@ -109,7 +162,9 @@ function NewTest() {
     alert(`Test Finished\nNum${CurTest.num-1}\nTrue${CurTest.true}\nFalse${CurTest.false}`)
     Menu("test")
   } else {
-    CurentSelectedWord = ar_FT[(Math.floor(Math.random()*ar_FT.length))];
+    CurentSelectedWord = //ar_FT[(Math.floor(Math.random()*ar_FT.length))];
+        SelectRand(tim_ar);
+
     
     if (test_option.lang === "kr-to-uz") {
       document.getElementById("test_ask_word").innerHTML = 
@@ -169,6 +224,9 @@ function CheckTheAnswer() {
 function SetDataToLS() {
   localStorage.setItem("KR_VOC_MY_ffLS", JSON.stringify(words));
 }
+function SetSettingsToLS() {
+    localStorage.setItem("KR_VOC_MY_Setings", JSON.stringify(settings))
+}
 //
 function ShowWords() {
   count = 0;
@@ -199,7 +257,7 @@ function ClickedWord(param1) {
   re_inp.uz.des.value = words[CurentSelectedWord].uz_des;
   document.getElementById("word_show_date").innerHTML =
     `Added date => ${words[CurentSelectedWord].date}`;
-  move_list.style = `transform: translate(-60%, 0);`;
+    SlideScreenList(4);
     var ans_ = {
       tr: 0,
       fa: 0
@@ -248,7 +306,7 @@ function ClickedWord(param1) {
 function DeleteWord() {
   words.splice(CurentSelectedWord, 1);
   SetDataToLS();
-  move_list.style = `transform: translate(-20%, 0);`;
+  SlideScreenList(2);
   ShowWords();
 }
 //
@@ -260,23 +318,47 @@ function ChangeWord() {
         words[CurentSelectedWord].kr_word = re_inp.kr.word.value;
         words[CurentSelectedWord].kr_des = re_inp.kr.des.value;
         SetDataToLS();
-        move_list.style = `transform: translate(-25%, 0);`;
+        SlideScreenList(2);
         ShowWords();
       }
 }
 //
+Menu("add")
+function SlideScreenList(num_of_list) {
+  BeforeList = CurentList;
+  CurentList = num_of_list;
+  move_list.style = `transform: translate(-${(num_of_list-1)*10}%, 0);`;
+}
+//
 function Menu(list_) {
   if (list_ === "add") {
-    move_list.style = `transform: translate(0, 0);`;
+      SlideScreenList(1);
       inp.kr.word.value = "";
       inp.kr.des.value = "";
       inp.uz.word.value = "";
       inp.uz.des.value = "";
   } else if (list_ === "words") {
-    move_list.style = `transform: translate(-20%, 0);`;
+    SlideScreenList(2);
     ShowWords();
   } else if (list_ === "test") {
-    move_list.style = `transform: translate(-40%, 0);`;
+    SlideScreenList(3);
+    
+    //
+    document.getElementById("test_select_num").value = settings.NumOfTests;
+    if (settings.langTo === "kr-to-uz") {
+        document.getElementById("test_select_lang_kr_to_uz").checked = true;
+    } else if (settings.langTo === "uz-to-kr") {
+        document.getElementById("test_select_lang_uz_to_kr").checked = true;
+    }
+    if (settings.Period === "all") {
+        document.getElementById("test_select_date_all").checked = true;
+    } else if (settings.Period === "week") {
+        document.getElementById("test_select_date_week").checked = true;        
+    } else if (settings.Period === "today") {
+        document.getElementById("test_select_date_today").checked = true;        
+    }
+    //
+
   }
 }
 //
@@ -381,3 +463,70 @@ function getCurrentDateTime() {
         alert('Sorry, your browser does not support speech synthesis.');
       }
     }
+    //dsad
+    //
+    //console.table()
+
+    console.log("__")
+
+    var arrat = [null, 0, 0, 0, 0];
+    for (let counter_ = 0; counter_ < 1000; counter_++) {
+
+        arrat[SelectRand([
+            {ind: 1, fa: 20},
+            {ind: 2, fa: 15},
+            {ind: 3, fa: 10},
+            {ind: 4, fa: 5}
+        ])]++;
+        /*-console.table(SelectRand([
+            {ind: 1, fa: 20},
+            {ind: 2, fa: 15},
+            {ind: 3, fa: 10},
+            {ind: 4, fa: 5}
+        ]))    */
+    }
+    console.table(arrat)
+    
+
+    function SelectRand(object_) {
+        answer_ = 0;
+        All_chechs_ = 0;
+        object_.forEach(element => {
+          All_chechs_+=element.fa;
+        });
+        tmAr = [];
+        object_.forEach(element => {
+          tmAr.push({ind: element.ind, 
+            kf: (element.fa/All_chechs_)})
+        });
+        tmAr.forEach(element => {
+          element.kf /= 2;
+          element.kf += ((0.5/object_.length));
+        });
+        //console.table(tmAr)
+        //console.table(tmAr);
+        for (let i = 1; i < tmAr.length; i++) {
+          tmAr[i].kf+=tmAr[i-1].kf;
+        }
+        Ran_Num_ = Math.random();
+        for (let i = tmAr.length-1; i >= 0;i--) {
+          if (tmAr[i].kf >= Ran_Num_) {
+            answer_ = tmAr[i].ind;
+          }
+        }
+        return answer_;
+      }
+  
+
+      function myFunction(x) {
+        x.classList.toggle("change");
+      }
+
+
+      function GoToMenu() {
+        if (CurentList === 6) {
+          SlideScreenList(BeforeList);
+        } else {
+          SlideScreenList(6);
+        }
+      }
