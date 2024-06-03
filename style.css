@@ -8,6 +8,7 @@ body {
   * {
     margin: 0;
     padding: 0;
+    user-select: none;
   }
   
   
@@ -415,4 +416,36 @@ body {
     
     .change .bar3 {
       transform: translate(0, -11px) rotate(45deg);
+    }
+
+    .setting_menu {
+      justify-content: start;
+    }
+
+    .top_pn {
+      flex-direction: row;
+      justify-content: end;
+      width: calc(1vw*100);
+      aspect-ratio: 6/1;
+      background-color: aqua;
+    }
+    .our_place {
+      background-color: rgb(136, 142, 179);
+      width: calc(1vw*66);
+      aspect-ratio: 6/1;
+      border-radius: calc(1vw*4);
+    }
+    .scound_st{
+      background-color: rgb(192, 97, 211);
+      margin: calc(1vw*2);
+      border-radius: 50%;
+      aspect-ratio: 1/1;
+      width: calc(1vw*10);
+    } 
+
+    .main_pn {
+      width: calc(1vw*100);
+      height: calc(1vh*75);
+      aspect-ratio: 8/1;
+      background-color: rgb(94, 99, 116);
     }

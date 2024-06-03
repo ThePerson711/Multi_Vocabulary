@@ -9,7 +9,7 @@
 <body>
   <div class="screen" id="screen">
     <div class="menu_top_pn center">
-      <div class="container" onclick="myFunction(this); GoToMenu();">
+      <div id="container" class="container" onclick="myFunction(this); GoToMenu();">
         <div class="bar1"></div>
         <div class="bar2"></div>
         <div class="bar3"></div>
@@ -86,6 +86,16 @@
               OTHER
             </button>
           </div>
+          <div class="test_inner_p">
+            <div class="center">
+              <p class="test_in_p">Card</p>
+              <input class="settings_inp" id="test_select_type_card" type="radio" name="test_select_type" checked>
+            </div>
+            <div class="center">
+              <p class="test_in_p">Test</p>
+              <input class="settings_inp" id="test_select_type_test" type="radio" name="test_select_type">
+            </div>
+          </div>
           <button class="test_btn" onclick="StartTest();">
             START
           </button>
@@ -148,7 +158,17 @@
           </div>
         </div>
         <!-- ### -->
-        <div class="main_panels">Menu</div>
+        <div class="main_panels setting_menu">
+          <div class="top_pn center">
+            <div class="our_place center">
+              AKROYIT
+            </div>
+            <div class="scound_st center">
+              Sound
+            </div>
+          </div>
+          <div class="main_pn center">maion</div>
+        </div>
         <!-- ### -->
         <div class="main_panels">7</div>
         <!-- ### -->
@@ -167,6 +187,12 @@
       <div class="menu_btn" id="test_btn" onclick="Menu(`test`);">TEST</div>
     </div>
   </div>
-  <script src="script.js"></script>
+  <script src="scripts/P_words.js"></script>
+  <script src="scripts/P_add.js"></script>
+  <script src="scripts/p_test.js"></script>
+  <script src="scripts/p_test.js"></script>
+  <script src="scripts/P_menu.js"></script>
+  <script src="scripts/void.js"></script>
+  <script src="scripts/main.js"></script>
 </body>
 </html>
