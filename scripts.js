@@ -42,6 +42,11 @@ let CurTest = {
 }
 let CurentSelectedWord = 0;
 let NumOfList = 7;
+let test_with_option;
+let CurentTestNth;
+let option = [];
+let ques_id;
+let RightAnswerForOptions;
 if (localStorage.getItem("KR_VOC_MY_ffLS") !== null) {
   words = JSON.parse(localStorage.getItem("KR_VOC_MY_ffLS"));
 }
@@ -70,9 +75,8 @@ test.check.style.visibility = "hidden";
 TextToSpeech("", "kr");
 
 // ????????????????????????
-document.getElementById("test_select_type_test").click();
-StartTest();
-Menu("menu");
+//document.getElementById("test_select_type_test").click();
+//StartTest();
 
 //
 function StartTest() {
@@ -113,13 +117,99 @@ function StartTest() {
   if (document.getElementById("test_select_type_test").checked) {
     //
     move_list.style = `transform: translate(-${5*100/NumOfList}%, 0);`;
+    test_with_option = {
+      num_of_test: (document.getElementById("test_select_num").value),
+      test_lang: (document.getElementById("test_select_lang_kr_to_uz").checked)?("kr-to-uz"):("uz-to-kr"),
+      test_period: (document.getElementById("test_select_date_today").checked)?("today"):
+            ((document.getElementById("test_select_date_week").checked)?("week"):
+            (((document.getElementById("test_select_date_all").checked)?("all"):("error")))),
+      ArrayOfCertainWords: SortArray(words, (document.getElementById("test_select_date_today").checked)?("today"):
+            ((document.getElementById("test_select_date_week").checked)?("week"):
+            (((document.getElementById("test_select_date_all").checked)?("all"):("error")))))
+    };
+    TestTestBegin();
   }
+}
+//
+function SortArray(array_, period_) {
+  answer = [];
+  for (let i = 0; i < array_.length; i++) {
+    element = array_[i];
+    if (  (period_ === "today" && daysPassedSince(element.date) <= 0) ||
+          (period_ === "week" && daysPassedSince(element.date) <= 6) ||
+          (period_ === "all" && true)   ) {
+            element.id = i;
+      answer.push(element);
+    }
+  }
+  return answer;
+}
+//
+function TestTestBegin() {
+  for (let i = 1; i<=4; i++) {
+    document.getElementById(`test_option_${i}`).disabled = false;
+    document.getElementById(`test_option_${i}`).style =  "background-color: rgb(154, 101, 187);";
+  }
+  params = test_with_option;
+  //for (let CurentNumOfTest = 1; CurentNumOfTest <= params.num_of_test; CurentNumOfTest++) {
+  f();
+  function f() { 
+
+    if (params.ArrayOfCertainWords.length >= 4) {
+      CurentTestNth = Math.floor(Math.random()*params.ArrayOfCertainWords.length);
+      
+      ques_id = params.ArrayOfCertainWords[CurentTestNth].id;
+      CurentSelectedWord = ques_id;
+      option = [-1,-1,-1,-1];
+      RightAnswerForOptions = Math.floor(Math.random()*4);
+      option[RightAnswerForOptions] = CurentTestNth;
+      for (let i = 0; i < 4; i++ ) {
+        if (option[i] === -1) {
+          option[i] = Math.floor(Math.random()*params.ArrayOfCertainWords.length)
+          while (option[i] === CurentTestNth 
+            || (option[i] === option[0] && i !== 0)
+            || (option[i] === option[1] && i !== 1)
+            || (option[i] === option[2] && i !== 2)
+            || (option[i] === option[3] && i !== 3) ) {
+            option[i] = Math.floor(Math.random()*params.ArrayOfCertainWords.length)
+          }
+        }
+      }
+      document.getElementById("test_question").innerHTML = (params.test_lang === "kr-to-uz")?(params.ArrayOfCertainWords[CurentTestNth].kr_word):(params.ArrayOfCertainWords[CurentTestNth].uz_word)
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(`test_option_${i}`).innerHTML = 
+          (params.test_lang === "kr-to-uz")?(params.ArrayOfCertainWords[option[i-1]].uz_word):(params.ArrayOfCertainWords[option[i-1]].kr_word)
+      }
+    } 
+  }
+
+}
+//
+function TestOptionSelected(option_) {
+  if (option_ === RightAnswerForOptions+1) {
+    document.getElementById(`test_option_${option_}`).style = "background-color: greenyellow;";
+    words[ques_id].tested.push({
+      date: getCurrentDateTime(),
+      result: true
+    })
+  } else {
+    document.getElementById(`test_option_${option_}`).style = "background-color: rgb(219, 52, 52);";
+    words[ques_id].tested.push({
+      date: getCurrentDateTime(),
+      result: false
+    })
+  }
+  for (let i = 1; i<=4; i++) {
+    document.getElementById(`test_option_${i}`).disabled = true;
+  }
+  setTimeout(() => {
+    TestTestBegin();
+  }, 1250);
 }
 //
 function NewTest() {
   CurentNumOfTest++;
   CurTest.num++;
-  console.log(CurentNumOfTest)
   if (CurentNumOfTest > test_option.num) {
     alert(`Test Finished\nNum${CurTest.num-1}\nTrue${CurTest.true}\nFalse${CurTest.false}`)
     Menu("test")
@@ -202,9 +292,7 @@ function ShowWords() {
 }
 //
 function ClickedWord(param1) {
-  console.log("pa",param1)
   CurentSelectedWord = param1 - 1;
-  console.log(param1)
   re_inp.kr.word.value = words[CurentSelectedWord].kr_word;
   re_inp.kr.des.value = words[CurentSelectedWord].kr_des;
   re_inp.uz.word.value = words[CurentSelectedWord].uz_word;
@@ -294,10 +382,13 @@ function Menu(list_) {
   }
 }
 //
+
 function AddNewWord() {
+  id__ = words.length;
   if (inp.kr.word.value !== "" && 
       inp.uz.word.value !== "") {
       words.push({
+        id: id__,
         kr_word: inp.kr.word.value,
         kr_des: inp.kr.des.value,
         uz_word: inp.uz.word.value,
@@ -316,11 +407,7 @@ function AddNewWord() {
 }
 
 //
-console.log(daysPassedSince("2024-05-22"))
-console.log(timePassedSince("2024-05-22"))
 
-console.log(daysPassedSince("2024-05-18T12:00:10"))
-console.log(timePassedSince(getCurrentDateTime()))
 function daysPassedSince(dateString) {
   // Parse the entered date string into a Date object
   var enteredDate = new Date(dateString);
@@ -410,4 +497,37 @@ function getCurrentDateTime() {
         console.log('Thing was saved to the database.');
         localStorage.removeItem("KR_VOC_MY_ffLS");
       }
+    }
+
+
+    ///
+    ///
+    ///
+    function SelectRand(object_) {
+      answer_ = 0;
+      All_chechs_ = 0;
+      object_.forEach(element => {
+        All_chechs_+=element.fa;
+      });
+      tmAr = [];
+      object_.forEach(element => {
+        tmAr.push({ind: element.ind, 
+          kf: (element.fa/All_chechs_)})
+      });
+      tmAr.forEach(element => {
+        element.kf /= 2;
+        element.kf += ((0.5/object_.length));
+      });
+      //console.table(tmAr)
+      //console.table(tmAr);
+      for (let i = 1; i < tmAr.length; i++) {
+        tmAr[i].kf+=tmAr[i-1].kf;
+      }
+      Ran_Num_ = Math.random();
+      for (let i = tmAr.length-1; i >= 0;i--) {
+        if (tmAr[i].kf >= Ran_Num_) {
+          answer_ = tmAr[i].ind;
+        }
+      }
+      return answer_;
     }
