@@ -394,3 +394,7 @@ body {
       font-weight: bold;
       text-decoration: underline;
     }
+
+    .for_nothing {
+      margin: 0px;
+    }
